@@ -7,19 +7,20 @@ const lambda = new AWS.Lambda();
 module.exports.handler = async (event) => {
 
     console.log("event", event);
+    const body = JSON.parse(event.body);
 
-    const sentiment_response = await getSentiment(event.comment);
+    const sentiment_response = await getSentiment(body.comment);
     const sentiment_body = JSON.parse(JSON.parse(sentiment_response.Payload).body);
 
     const client = await getClientMDB();
 
     const res = await client.collection("insights").insertOne({
-        indicator: event.indicator,
-        product: event.product,
-        comment: event.comment,
+        indicator: body.indicator,
+        product: body.product,
+        comment: body.comment,
         createdAt: moment().valueOf(),
-        client: event.client,
-        flow: event.flow,
+        client: body.client,
+        flow: body.flow,
         sentiment: sentiment_body.sentiment,
         sentimentPercentage: sentiment_body.sentimentPercentage,
     });
