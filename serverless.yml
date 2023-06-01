@@ -32,6 +32,7 @@ functions:
     handler: processInsights.handler
   getInsights:
     handler: getInsights.handler
+    timeout: 900
     events:
       - http:
           path: /insights

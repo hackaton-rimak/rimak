@@ -8,6 +8,7 @@ module.exports.handler = async (event) => {
 
     const client = await getClientMDB();
     let res = [];
+    console.log("client OK")
     if(body.type === "question_average"){
         res = await client.collection("insights").aggregate([
             {
