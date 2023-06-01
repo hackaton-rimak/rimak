@@ -15,13 +15,13 @@
   "bugs": {
     "url": "https://github.com/hackaton-rimak/rimak/issues"
   },
-<<<<<<< HEAD
   "homepage": "https://github.com/hackaton-rimak/rimak#readme",
   "dependencies": {
     "aws-sdk": "^2.1388.0",
+    "mongodb": "^5.5.0",
     "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "serverless-offline": "^12.0.4"
   }
-=======
-  "homepage": "https://github.com/hackaton-rimak/rimak#readme"
->>>>>>> refs/remotes/origin/main
 }

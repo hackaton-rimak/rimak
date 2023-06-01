@@ -5,6 +5,17 @@ frameworkVersion: "3"
 provider:
   name: aws
   runtime: nodejs16.x
+  environment:
+    MONGODB_DBNAME: ${ssm:/RIMAK/MONGODB_DBNAME}
+    MONGO_URI: ${ssm:/RIMAK/MONGO_URI}
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - ssm:GetParameter
+        - ssm:GetParameters
+        - ssm:GetParametersByPath
+plugins:
+  - serverless-offline
 
 
   iamRoleStatements:
@@ -19,4 +30,12 @@ functions:
       - http: 
           method: post
           path: sentiment
-
+  processInsights:
+    handler: processInsights.handler
+  getInsights:
+    handler: getInsights.handler
+    events:
+      - http:
+          path: /insights
+          method: post
+          cors: true
