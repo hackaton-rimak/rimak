@@ -7,7 +7,7 @@ const lambda = new AWS.Lambda();
 module.exports.handler = async (event) => {
 
     console.log("event", event);
-    const body = JSON.parse(event.body);
+    const body = typeof event.body == "string" ? JSON.parse(event.body):event.body;
 
     const sentiment_response = await getSentiment(body.comment);
     const sentiment_body = JSON.parse(JSON.parse(sentiment_response.Payload).body);
