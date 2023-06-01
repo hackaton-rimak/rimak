@@ -14,15 +14,12 @@ provider:
         - ssm:GetParameter
         - ssm:GetParameters
         - ssm:GetParametersByPath
-plugins:
-  - serverless-offline
-
-
-  iamRoleStatements:
     - Effect: Allow
       Action:
         - comprehend:*
       Resource: "*"
+plugins:
+  - serverless-offline
 functions:
   sentimentAnalisys:
     handler: handler.sentimentAnalisys

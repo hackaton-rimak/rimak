@@ -9,7 +9,7 @@ module.exports.handler = async (event) => {
     console.log("body",body);
 
     const client = await getClientMDB();
-    const res = await client.collection("rimak").find({product: body.product}).toArray();
+    const res = await client.collection("insights").find({product: body.product}).toArray();
 
     return {
         statusCode: 200,

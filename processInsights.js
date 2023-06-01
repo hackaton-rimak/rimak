@@ -1,6 +1,7 @@
 'use strict';
 const mongodb = require("mongodb");
 const AWS = require('aws-sdk');
+const moment = require('moment');
 const lambda = new AWS.Lambda();
 
 module.exports.handler = async (event) => {
@@ -9,14 +10,14 @@ module.exports.handler = async (event) => {
 
     const sentiment_response = await getSentiment(event.comment);
 
-    console.log("sentiment_response", sentiment_response);
 
     const client = await getClientMDB();
 
-    const res = await client.collection("rimak").insertOne({
+    const res = await client.collection("insights").insertOne({
         indicator: event.indicator,
         product: event.product,
         comment: event.comment,
+        createdAt: moment().valueOf(),
         client: event.client,
         flow: event.flow,
         sentiment: sentiment_response.sentiment,
