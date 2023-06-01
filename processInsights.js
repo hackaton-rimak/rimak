@@ -45,7 +45,7 @@ async function getSentiment(comment){
         FunctionName: 'sentiment',
         InvocationType: 'RequestResponse',
         LogType: 'Tail',
-        Payload: {text: comment},
+        Payload:{body: JSON.stringify({text: comment})},
     };
 
     const res = await lambda.invoke(params, function(err, data) {

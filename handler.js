@@ -5,6 +5,7 @@ const comprehend = new AWS.Comprehend();
 
 
 module.exports.sentimentAnalisys = async (event) => {
+    console.log("BRAYA", event)
 
   const body = JSON.parse(event.body);
 
