@@ -31,6 +31,21 @@ module.exports.handler = async (event) => {
                     "_id.month": 1,
                     "_id.day": 1
                 }
+            },
+            {
+                $group: {
+                    _id: {
+                        day: "$_id.day",
+                        month: "$_id.month",
+                        year: "$_id.year"
+                    },
+                    questions: {
+                        $push: {
+                            question: "$_id.question",
+                            averageValue: "$averageValue"
+                        }
+                    }
+                }
             }
         ]).toArray();
     }else{
