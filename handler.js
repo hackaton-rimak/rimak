@@ -119,22 +119,19 @@ bot.command("feedback", async (ctx) => {
     bot.on("callback_query:data", (cbq) => {
         const productlocal = cbq.callbackQuery.data;
 
-        console.log("product: ", productlocal);
         ctx.session.product = productlocal;
-        console.log("product session: ", get(ctx, "session.product", ""));
-
-        ctx.reply("¿Cuál es tu comentario?");
+        ctx.reply("¿Cuál es tu comentario?", {
+            reply_to_message_id: ctx.msg.message_id,
+        });
     });
 
     bot.on("message:text", async(msg) => {
         const newcomment = msg.message.text;
-        console.log("newcomment: ", get(ctx, "session.comment", ""));
         ctx.session.comment = newcomment;
-        console.log("newcomment session: ", get(ctx, "session.comment", ""));
 
-        console.log("second product session: ", get(ctx, "session.product", ""));
-
-        await ctx.reply("Gracias por tu feedback");
+        await ctx.reply("Gracias por tu feedback",{
+            reply_to_message_id: ctx.msg.message_id,
+        });
 
         request.product = get(ctx, "session.product", "");
         request.comment = get(ctx, "session.comment", "");
