@@ -5,11 +5,10 @@ const comprehend = new AWS.Comprehend();
 
 
 module.exports.sentimentAnalisys = async (event) => {
-    console.log("BRAYA", event)
+    console.log("event", event)
 
   const body = JSON.parse(event.body);
 
-  // Parámetros para el análisis de sentimiento
   const params = {
     LanguageCode: 'es',
     Text: body.text

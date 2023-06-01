@@ -9,7 +9,7 @@ module.exports.handler = async (event) => {
     console.log("event", event);
 
     const sentiment_response = await getSentiment(event.comment);
-
+    const sentiment_body = JSON.parse(JSON.parse(sentiment_response.Payload).body);
 
     const client = await getClientMDB();
 
@@ -20,8 +20,8 @@ module.exports.handler = async (event) => {
         createdAt: moment().valueOf(),
         client: event.client,
         flow: event.flow,
-        sentiment: sentiment_response.sentiment,
-        sentimentPercentage: sentiment_response.sentimentPercentage,
+        sentiment: sentiment_body.sentiment,
+        sentimentPercentage: sentiment_body.sentimentPercentage,
     });
 
     return {
@@ -42,38 +42,21 @@ module.exports.handler = async (event) => {
 
 async function getSentiment(comment){
     let params = {
-        FunctionName: 'sentiment',
-        InvocationType: 'RequestResponse',
+        FunctionName: 'rimak-dev-sentimentAnalisys',
         LogType: 'Tail',
-        Payload:{body: JSON.stringify({text: comment})},
+        Payload:JSON.stringify({body: JSON.stringify({text: comment})}),
     };
 
-    const res = await lambda.invoke(params, function(err, data) {
-        if (err) {
-            console.log(err, err.stack); // an error occurred
-        } else {
-            console.log(data); // successful response
-        }
-    });
+    const res = await lambda.invoke(params).promise();
 
     return res;
 }
 async function getClientMDB(dbName = `${process.env.MONGODB_DBNAME}`) {
     const mongo_uri = `${process.env.MONGO_URI}`;
 
-    console.log(mongo_uri, dbName)
     const client = await mongodb.MongoClient.connect(mongo_uri);
 
     const db = await client.db(dbName);
 
     return db;
 }
-
-// async function test(){
-//     const client = await getClientMDB();
-//     const res = await client.collection("rimak").find().toArray();
-//
-//     console.log('RES', res);
-// }
-//
-// test();
