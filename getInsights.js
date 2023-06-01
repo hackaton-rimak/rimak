@@ -53,11 +53,12 @@ module.exports.handler = async (event) => {
         try {
             res = await client.collection("insights").aggregate([
                 {
-                    $match: { product: body.product }
+                    $match: { product: { $regex: new RegExp(`^${body.product}$`, 'i') } }
                 },
                 {
                     $project: {
                         sentiment: 1,
+                        comment: 1,
                         product: 1,
                         day: { $dayOfMonth: { $toDate: "$createdAt" } },
                         month: { $month: { $toDate: "$createdAt" } },
@@ -73,7 +74,8 @@ module.exports.handler = async (event) => {
                             product: "$product",
                             sentiment: "$sentiment"
                         },
-                        count: { $sum: 1 }
+                        count: { $sum: 1 },
+                        comments: { $push: "$comment" }
                     }
                 },
                 {
@@ -87,7 +89,8 @@ module.exports.handler = async (event) => {
                         sentiments: {
                             $push: {
                                 sentiment: "$_id.sentiment",
-                                count: "$count"
+                                count: "$count",
+                                comments: "$comments"
                             }
                         }
                     }
