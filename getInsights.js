@@ -1,5 +1,6 @@
 'use strict';
 const mongodb = require("mongodb");
+const lodash = require("lodash");
 
 module.exports.handler = async (event) => {
 
@@ -8,7 +9,6 @@ module.exports.handler = async (event) => {
 
     const client = await getClientMDB();
     let res = [];
-    console.log("client OK")
     if(body.type === "question_average"){
         res = await client.collection("insights").aggregate([
             {
@@ -55,11 +55,16 @@ module.exports.handler = async (event) => {
         ]).toArray();
     }else{
         console.log("pass")
+        let query = [{
+            $match: { product: { $regex: new RegExp(`^${body.product}$`, 'i') } }
+        }];
+
+        if (lodash.get(body, "client", "") !== ""){
+            query.push({$match: { client: body.client }})
+        }
         try {
             res = await client.collection("insights").aggregate([
-                {
-                    $match: { product: { $regex: new RegExp(`^${body.product}$`, 'i') } }
-                },
+                    ...query,
                 {
                     $project: {
                         sentiment: 1,
