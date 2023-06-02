@@ -17,10 +17,10 @@ module.exports.handler = async (event) => {
             {
                 $group: {
                     _id: {
+                        question: "$indicator.question",
                         day: { $dayOfMonth: { $toDate: "$createdAt" } },
                         month: { $month: { $toDate: "$createdAt" } },
-                        year: { $year: { $toDate: "$createdAt" } },
-                        question: "$indicator.question"
+                        year: { $year: { $toDate: "$createdAt" } }
                     },
                     averageValue: { $avg: "$indicator.value" },
                 }
@@ -34,14 +34,14 @@ module.exports.handler = async (event) => {
             },
             {
                 $group: {
-                    _id: {
-                        day: "$_id.day",
-                        month: "$_id.month",
-                        year: "$_id.year"
-                    },
-                    questions: {
+                    _id: "$_id.question",
+                    dates: {
                         $push: {
-                            question: "$_id.question",
+                            date: {
+                                day: "$_id.day",
+                                month: "$_id.month",
+                                year: "$_id.year"
+                            },
                             averageValue: "$averageValue"
                         }
                     }
@@ -49,9 +49,7 @@ module.exports.handler = async (event) => {
             },
             {
                 $sort: {
-                    "_id.year": 1,
-                    "_id.month": 1,
-                    "_id.day": 1
+                    "_id": 1
                 }
             }
         ]).toArray();
