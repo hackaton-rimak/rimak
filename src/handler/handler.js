@@ -3,7 +3,7 @@ const AWS = require('aws-sdk');
 const {Bot, session, InlineKeyboard} = require("grammy");
 const {conversations, createConversation} = require("@grammyjs/conversations");
 const {get} = require("lodash");
-const { Title1, Q2, Q3, Q4, G1, Q1, ProductList} = require("./labels");
+const { Title1, Q2, Q3, Q4, G1, Q1, ProductList} = require("../constants/labels");
 
 const lambda = new AWS.Lambda();
 const comprehend = new AWS.Comprehend();
@@ -90,9 +90,8 @@ async function invokeInsights(request){
         Payload:JSON.stringify({body: JSON.stringify(request)}),
     };
 
-    const res = await lambda.invoke(params).promise();
 
-    return res;
+    return await lambda.invoke(params).promise();
 }
 async function survey(conversation, ctx) {
     await ctx.reply(Title1);

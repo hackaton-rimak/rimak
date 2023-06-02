@@ -28,21 +28,21 @@ plugins:
   - serverless-offline
 functions:
   feedback:
-    handler: handler.webhookBot
+    handler: src/handler/handler.webhookBot
     events:
       - http:
           path: webhook
           method: post
   sentimentAnalisys:
-    handler: handler.sentimentAnalisys
+    handler: src/handler/handler.sentimentAnalisys
     events:
       - http: 
           method: post
           path: sentiment
   processInsights:
-    handler: processInsights.handler
+    handler: src/handler/ProcessInsights.handler
   getInsights:
-    handler: getInsights.handler
+    handler: src/handler/GetInsights.handler
     timeout: 30
     events:
       - http:
