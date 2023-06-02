@@ -3,7 +3,7 @@ const mongodb = require("mongodb");
 async function insertOne(collection, data){
     const client = await getClient();
 
-    return client.collection(collection).aggregate(data);
+    return client.collection(collection).insertOne(data);
 }
 async function aggregate(aggregateQuery, collection){
     const client = await getClient();
