@@ -20,7 +20,7 @@ async function getInsights(event) {
                         month: {$month: {$toDate: "$createdAt"}},
                         year: {$year: {$toDate: "$createdAt"}}
                     },
-                    averageValue: "$indicator.value",
+                    averageValue: {$avg: "$indicator.value"},
                 }
             },
             {
