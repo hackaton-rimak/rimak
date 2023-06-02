@@ -3,7 +3,8 @@ const AWS = require('aws-sdk');
 const {Bot, session, InlineKeyboard} = require("grammy");
 const {conversations, createConversation} = require("@grammyjs/conversations");
 const {get} = require("lodash");
-const { Title1, Q2, Q3, Q4, G1, Q1, ProductList} = require("../constants/labels");
+const { Q2, Q3, Q4, G1, Q1, ProductList}  = require("../constants/labels");
+
 
 const lambda = new AWS.Lambda();
 const comprehend = new AWS.Comprehend();
@@ -12,8 +13,6 @@ const TOKEN_BOT = "6056613927:AAEK1c8BVJRUTxxKb66_CmrZHheXifb3tVc";
 const bot = new Bot(TOKEN_BOT);
 
 module.exports.sentimentAnalisys = async (event) => {
-    console.log("event", event)
-
   const body = JSON.parse(event.body);
 
   const params = {
@@ -46,11 +45,7 @@ module.exports.sentimentAnalisys = async (event) => {
 };
 
 module.exports.webhookBot = async (event) => {
-    console.log("token: ", TOKEN_BOT);
-    //console.log("bot: ", bot)
     try{
-        console.log("before pase: ", event.body);
-
         const parseBody = JSON.parse(event.body)
         console.log("info passed: ", parseBody);
         await bot.init();
@@ -91,10 +86,9 @@ async function invokeInsights(request){
     };
 
 
-    return await lambda.invoke(params).promise();
+    return lambda.invoke(params).promise();
 }
 async function survey(conversation, ctx) {
-    await ctx.reply(Title1);
     await ctx.reply(Q1);
     const message1 = await conversation.form.number();
     await ctx.reply(Q2);
@@ -128,54 +122,39 @@ async function survey(conversation, ctx) {
         product: "",
     };
 
-    console.log("Rquest survey",request);
-
     await invokeInsights(request);
 }
+async function feedback(conversation, ctx) {
+    await ctx.reply("Puedes seleccionar un producto para feedback", {
+        reply_markup: ProductList,
+    });
+    const callback = await conversation.wait();
 
-bot.use(createConversation(survey));
+    await ctx.reply("¿Cuál es tu comentario?");
+    const comment = await conversation.form.text();
 
-bot.callbackQuery("survey", (ctx) => ctx.conversation.enter("survey"));
+    await ctx.reply("Muchas gracias, analizaremos el feedback.")
 
-bot.callbackQuery("feedback", async (ctx) => {
     const request = {
         flow: "chat",
         indicator: [],
         client: ctx.chat.first_name,
-        comment: "",
-        product: "",
+        comment: comment,
+        product: callback.callbackQuery.data,
     };
-    await ctx.reply("Desahogate con Kushki!!!");
 
-    await ctx.reply("Puedes seleccionar un producto para feedback", {
-        reply_markup: ProductList,
-    });
+    await invokeInsights(request);
+    await showMenu(ctx);
+}
 
-    if (!ctx.session) {
-        ctx.session = {};
-    }
+// Create conversation for feedback and survey.
+bot.use(createConversation(survey));
+bot.use(createConversation(feedback));
 
-    bot.on("callback_query:data", (cbq) => {
-        const productlocal = cbq.callbackQuery.data;
-
-        ctx.session.product = productlocal;
-        ctx.api.sendMessage(ctx.chat.id,"¿Cuál es tu comentario?");
-    });
-
-    bot.on("message:text", async(msg) => {
-        const newcomment = msg.message.text;
-        ctx.session.comment = newcomment;
-
-        await ctx.api.sendMessage(ctx.chat.id, "Gracias por tu feedback");
-
-        request.product = get(ctx, "session.product", "");
-        request.comment = get(ctx, "session.comment", "");
-
-        await invokeInsights(request);
-        await showMenu(ctx);
-    });
-});
+// Create action to options.
+bot.callbackQuery("survey", (ctx) => ctx.conversation.enter("survey"));
+bot.callbackQuery("feedback", (ctx) => ctx.conversation.enter("feedback"));
 
 bot.command("start", async (ctx) => {
-   await showMenu(ctx);
+    await showMenu(ctx);
 });
