@@ -48,4 +48,3 @@ functions:
       - http:
           path: /insights
           method: post
-          cors: true
